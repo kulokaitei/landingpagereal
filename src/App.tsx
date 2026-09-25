@@ -14,6 +14,7 @@ import WhatHappensNext from '@/components/WhatHappensNext';
 import FinalCTA from '@/components/FinalCTA';
 import Footer from '@/components/Footer';
 import ExitIntentModal from '@/components/ExitIntentModal';
+import SentryDebugTrigger from '@/components/SentryDebugTrigger';
 
 function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -53,8 +54,10 @@ function App() {
       </main>
       <Footer />
       <ExitIntentModal />
+      <SentryDebugTrigger />
     </div>
   );
 }
 
 export default App;
+
