@@ -67,6 +67,12 @@ export default function Nav() {
               Process
             </a>
             <a
+              href="#faq"
+              className="hidden md:inline-block text-xs font-medium text-neutral-400 hover:text-white transition-colors"
+            >
+              FAQ
+            </a>
+            <a
               href="#request-audit"
               className="relative group inline-flex items-center justify-center text-xs font-medium text-white px-4 py-2 rounded-lg bg-white/[0.05] border border-white/10 hover:border-accent/40 hover:bg-accent/[0.08] hover:text-accent transition-all duration-300"
             >

@@ -25,7 +25,7 @@ export default function Footer() {
           </span>
         </div>
 
-        <div className="flex items-center gap-6 text-xs text-neutral-400">
+        <div className="flex items-center flex-wrap gap-5 text-xs text-neutral-400">
           <a href="#who-its-for" className="hover:text-white transition-colors">
             Fit
           </a>
@@ -35,8 +35,22 @@ export default function Footer() {
           <a href="#credibility" className="hover:text-white transition-colors">
             Track Record
           </a>
+          <a href="#faq" className="hover:text-white transition-colors">
+            FAQ
+          </a>
           <a href="#request-audit" className="hover:text-accent transition-colors">
             Request Audit
+          </a>
+          <a
+            href="/unsubscribe"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/unsubscribe');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            className="hover:text-neutral-300 transition-colors opacity-70 hover:opacity-100"
+          >
+            Unsubscribe
           </a>
         </div>
 
