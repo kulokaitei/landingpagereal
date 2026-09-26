@@ -589,7 +589,7 @@ export default function FinalCTA() {
                         </div>
                       </div>
                       <span className="text-xs text-neutral-400 leading-relaxed group-hover:text-neutral-300 transition-colors">
-                        I consent to the processing of my personal data to receive my tailored automation audit roadmap in accordance with privacy regulations.
+                        I agree to the terms and authorize processing of my application and payment details for the Operations Transformation Plan.
                       </span>
                     </label>
                   </div>
@@ -612,25 +612,29 @@ export default function FinalCTA() {
                       {loading ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Generating Roadmap...</span>
+                          <span>Preparing Checkout...</span>
                         </>
                       ) : (
                         <>
-                          <span>Get My Full Audit RoadMap</span>
+                          <span>Apply & Checkout with Stripe</span>
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center gap-6 pt-3 text-[11px] text-neutral-400">
+                  <div className="flex items-center justify-center flex-wrap gap-4 pt-3 text-[11px] text-neutral-400 font-mono">
                     <span className="flex items-center gap-1">
-                      <Lock className="w-3 h-3 text-neutral-500" />
-                      Mutual NDA Pre-Signed
+                      <Lock className="w-3 h-3 text-accent" />
+                      Stripe 256-Bit Encrypted
                     </span>
                     <span className="flex items-center gap-1">
                       <Shield className="w-3 h-3 text-neutral-500" />
-                      Zero sales pressure
+                      Mutual NDA Pre-Signed
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-accent" />
+                      Automated n8n Dispatch
                     </span>
                   </div>
                 </motion.form>
