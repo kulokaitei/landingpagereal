@@ -97,14 +97,37 @@ export default function FinalCTA() {
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentCancelled, setPaymentCancelled] = useState(false);
+  const [sessionId, setSessionId] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Check URL parameters on mount for payment redirects
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const payment = params.get('payment');
+      const session = params.get('session_id');
+      const emailParam = params.get('email');
+
+      if (payment === 'success') {
+        setPaymentSuccess(true);
+        setSubmitted(true);
+        if (session) setSessionId(session);
+        if (emailParam) setEmail(emailParam);
+      } else if (payment === 'cancelled') {
+        setPaymentCancelled(true);
+        setStep(4);
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
     if (!gdprConsent) {
-      setErrorMsg('Please confirm your consent to receive the tailored audit roadmap.');
+      setErrorMsg('Please confirm your consent to proceed with the transformation plan.');
       return;
     }
 
@@ -128,7 +151,7 @@ export default function FinalCTA() {
     };
 
     try {
-      const response = await fetch('/api/submit-audit', {
+      const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,17 +162,21 @@ export default function FinalCTA() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to submit audit request. Please try again.');
+        throw new Error(data.error || 'Failed to initialize Stripe checkout. Please try again.');
       }
 
-      setSubmitted(true);
+      if (data.url) {
+        // Redirect user to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        setSubmitted(true);
+      }
     } catch (err) {
-      console.error('Audit submission error:', err);
+      console.error('Checkout submission error:', err);
       Sentry.captureException(err);
       setErrorMsg(
         err.message || 'An unexpected connection error occurred. Please try submitting again.'
       );
-    } finally {
       setLoading(false);
     }
   };
@@ -172,19 +199,36 @@ export default function FinalCTA() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/25 text-accent text-xs font-mono mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Interactive Diagnostic & Audit Intake</span>
+            <span>Operations Transformation Plan</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold font-display tracking-tight text-white mb-4">
-            Request your Automation Audit.
+            Apply for your Transformation Plan.
           </h2>
           <p className="text-base sm:text-lg text-neutral-400 leading-relaxed max-w-xl mx-auto">
-            Answer 3 quick diagnostic questions to generate a tailored architectural blueprint and ROI projection.
+            Complete your diagnostic profile to initiate your custom systems architecture roadmap and reserve engineer onboarding.
           </p>
         </div>
 
         {/* Wizard Form Container */}
         <div className="relative rounded-3xl p-8 sm:p-10 bg-gradient-to-b from-white/[0.05] to-white/[0.02] border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.6)]">
+          {/* Payment Cancelled Notice Banner */}
+          {paymentCancelled && !submitted && (
+            <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <span>Checkout was cancelled. Your diagnostic inputs were preserved so you can checkout when ready.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPaymentCancelled(false)}
+                className="text-neutral-400 hover:text-white font-mono text-[11px]"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
           {submitted ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -192,18 +236,41 @@ export default function FinalCTA() {
               transition={{ duration: 0.4, ease: 'easeOut' }}
               className="text-center py-10"
             >
-              <div className="w-16 h-16 rounded-full bg-accent/15 border border-accent/40 flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 rounded-full bg-accent/15 border border-accent/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(74,222,128,0.25)]">
                 <CheckCircle2 className="w-8 h-8 text-accent" strokeWidth={2} />
               </div>
-              <h3 className="text-2xl font-semibold font-display text-white mb-2">
-                Diagnostic Intake Dispatched
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#163824] border border-[#23653A] text-accent font-mono text-xs font-semibold uppercase mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                <span>{paymentSuccess ? 'Order & Payment Confirmed' : 'Diagnostic Intake Dispatched'}</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold font-display text-white mb-3">
+                {paymentSuccess ? 'Transformation Plan Queued' : 'Intake Dispatched'}
               </h3>
               <p className="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-md mx-auto mb-6">
-                Thank you, {firstName}! We've queued your operational profile for architecture review. Your custom roadmap and diagnostic findings will be delivered to <span className="text-accent font-medium">{email}</span>.
+                Thank you{firstName ? `, ${firstName}` : ''}! Your operational profile and payment have been verified. Your custom architecture roadmap and dispatch telemetry have been relayed to <span className="text-accent font-medium">{email || 'your email'}</span>.
               </p>
-              <div className="inline-flex items-center gap-2 text-xs font-mono text-neutral-400 bg-white/[0.04] px-4 py-2 rounded-lg border border-white/5">
-                <Clock className="w-3.5 h-3.5 text-accent" />
-                <span>Next step: Diagnostic blueprint delivery within 1 business day</span>
+
+              {sessionId && (
+                <div className="mb-6 inline-block text-[11px] font-mono text-neutral-400 bg-white/[0.04] px-4 py-2 rounded-lg border border-white/10">
+                  STRIPE_SESSION: <span className="text-neutral-300">{sessionId}</span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.history.pushState({}, '', '/');
+                    setSubmitted(false);
+                    setPaymentSuccess(false);
+                    setStep(1);
+                  }}
+                  className="inline-flex items-center gap-2 text-xs font-mono text-neutral-400 hover:text-white bg-white/[0.05] hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Return to Home</span>
+                </a>
               </div>
             </motion.div>
           ) : (
