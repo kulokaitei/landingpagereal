@@ -124,6 +124,18 @@ export default async function handler(req, res) {
 
     const stripe = new Stripe(stripeSecretKey);
 
+    let checkoutMode = 'payment';
+    if (stripePriceId) {
+      try {
+        const priceObj = await stripe.prices.retrieve(stripePriceId);
+        if (priceObj.type === 'recurring') {
+          checkoutMode = 'subscription';
+        }
+      } catch (priceErr) {
+        console.warn('Could not inspect price type from Stripe, defaulting to payment:', priceErr.message);
+      }
+    }
+
     const lineItems = stripePriceId
       ? [{ price: stripePriceId, quantity: 1 }]
       : [
@@ -143,7 +155,7 @@ export default async function handler(req, res) {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment',
+      mode: checkoutMode,
       customer_email: email.trim().toLowerCase(),
       line_items: lineItems,
       metadata: sessionMetadata,
@@ -159,6 +171,7 @@ export default async function handler(req, res) {
       success: true,
       url: session.url,
       sessionId: session.id,
+      mode: checkoutMode,
     });
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);
