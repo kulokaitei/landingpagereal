@@ -35,6 +35,9 @@ export default function Footer() {
           <a href="#credibility" className="hover:text-white transition-colors">
             Track Record
           </a>
+          <a href="#faq" className="hover:text-white transition-colors">
+            FAQ
+          </a>
           <a href="#request-audit" className="hover:text-accent transition-colors">
             Request Audit
           </a>

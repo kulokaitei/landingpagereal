@@ -1,0 +1,43 @@
+# Meridian Ops Engine — Robots Configuration
+# Technical & AI Crawler Directives
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# OpenAI Search & ChatGPT Crawlers (AEO / GEO)
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Perplexity AI Answer Engine Crawler
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+
+# Anthropic Claude Search Crawler
+User-agent: Claude-Web
+Allow: /
+Disallow: /api/
+
+User-agent: anthropic-ai
+Allow: /
+
+# Google Search & Gemini Extended Training
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+
+# Bing / Microsoft Copilot Search
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+# Sitemap Location
+Sitemap: https://meridian-ops.io/sitemap.xml

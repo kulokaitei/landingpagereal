@@ -9,6 +9,7 @@ import WhoItsFor from '@/components/WhoItsFor';
 import HowItWorks from '@/components/HowItWorks';
 import Credibility from '@/components/Credibility';
 import SecurityAssurance from '@/components/SecurityAssurance';
+import FAQ from '@/components/FAQ';
 import AuditOffer from '@/components/AuditOffer';
 import WhatHappensNext from '@/components/WhatHappensNext';
 import FinalCTA from '@/components/FinalCTA';
@@ -85,6 +86,7 @@ function App() {
         <HowItWorks />
         <Credibility />
         <SecurityAssurance />
+        <FAQ />
         <AuditOffer />
         <WhatHappensNext />
         <FinalCTA />
